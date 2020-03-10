@@ -2,6 +2,8 @@
 """
     web builder
     (c) 2020 Rodney Maniego Jr.
+    https://github.com/rmaniego/wbuilder
+    MIT License
 """
 
 from bs4 import BeautifulSoup as bs
