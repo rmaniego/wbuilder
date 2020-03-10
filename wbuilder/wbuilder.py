@@ -15,23 +15,23 @@ class ElemBuilder:
         self.content_ = ""
         self.html_escape = True
 
-    def tag(self, val):
-        self.tag_ = verify(val)
+    def tag(self, value):
+        self.tag_ = verify(value)
         return self
         
-    def text(self, val):
+    def text(self, value):
         self.html_escape = True
-        self.content_ = val
+        self.content_ = value
         return self
         
-    def html(self, val):
+    def html(self, value):
         self.html_escape = False
-        self.content_ = val
+        self.content_ = value
         return self
     
     ### attributes
     def attr(self, key, val):
-        self.attributes.update({"key": val})
+        self.attributes.update({key: val})
         return self
     
     def action(self, val):
@@ -97,7 +97,7 @@ class ElemBuilder:
             self.attributes.update({"contenteditable": val})
         return self
 
-    def contextmenu(self, key, val):
+    def contextmenu(self, val):
         self.attributes.update({"contextmenu": val})
         return self
     
@@ -269,17 +269,80 @@ class WebBuilder:
         self.parent.append(parse(html))
         return self
 
-    def update(self, tag, old_val, new_val):
+    def update(self, tag, old_value, new_value):
         for item in self.html.find_all(tag):
             if tag == "link":
-                if item.attrs['href'] == old_val:
-                    item.attrs['href'] = new_val
+                if item.attrs['href'] == old_value:
+                    item.attrs['href'] = new_value
             elif tag == "script":
-                if item.attrs['src'] == old_val:
-                    item.attrs['src'] = new_val
+                if item.attrs['src'] == old_value:
+                    item.attrs['src'] = new_value
     
     def build(self):
         return self.html.prettify()
+
+class Blocks:
+    def __init__(self):
+        self.depth = 0
+        self.statements = []
+    
+    def if_(self, statement):
+        self.depth = depth(self.depth, 1)
+        tabs = ("\t" * (self.depth))
+        self.statements.append(concat([
+            tabs, "{%- if ", statement, " -%}"]))
+        return self
+    
+    def elif_(self, statement):
+        tabs = ("\t" * (self.depth))
+        self.statements.append(concat([
+            tabs, "{%- elif ", statement, " -%}"]))
+        return self
+    
+    def else_(self):
+        tabs = ("\t" * (self.depth))
+        self.statements.append(concat([
+            tabs, "{%- else -%}"]))
+        return self
+    
+    def endif(self):
+        tabs = ("\t" * (self.depth))
+        self.statements.append(concat([
+            tabs, "{%- endif -%}"]))
+        self.depth = depth(self.depth, -1)
+        return self
+    
+    def for_(self, statement):
+        self.depth = depth(self.depth, 1)
+        tabs = ("\t" * (self.depth))
+        self.statements.append(concat([
+            tabs, "{%- for ", statement, " -%}"]))
+        return self
+    
+    def endfor(self):
+        tabs = ("\t" * (self.depth))
+        self.statements.append(concat([
+            tabs, "{%- endfor -%}"]))
+        self.depth = depth(self.depth, -1)
+        return self
+    
+    def set_var(self, key, value):
+        tabs = ("\t" * (self.depth + 1))
+        self.statements.append(concat([tabs, "{%- set ", key, " = '", value, "' -%}"]))
+        return self
+    
+    def put(self, value):
+        tabs = ("\t" * (self.depth + 1))
+        if type(value) == str:
+            self.statements.append(concat([tabs, value]))
+        return self
+
+    # utils
+    def build(self, clear=True):
+        return "\n".join(self.statements)
+        if clear:
+            self.depth = 0
+            self.statements = []
 
 ### shortcuts
 def a():
@@ -471,3 +534,9 @@ def concat(collection):
     if type(collection) == list:
         return "".join(collection)
     return ""
+
+def depth(value, increment=1):
+    value = value + increment
+    if value < 0:
+        return 0
+    return value

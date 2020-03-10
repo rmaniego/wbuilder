@@ -9,20 +9,19 @@ from wbuilder.wbuilder import title, link, form, input_, button, span
 
 
 # hardcoding
-print("\n#1: Use mkTag to create custom elements")
+print("\n#1a: Use mkTag to create custom elements")
 header = wb.mkTag("h1",
                          {"id": "title",
                           "class": "custom-title"},
                          "Contact Information")
 print(header)
+# using element builder
+print("\n#1b: Use ElemBuilder to create custom elements")
+box = wb.ElemBuilder().tag("div").attr("lang", "en-PH").build()
+print(box)
 
-# create element using element builder
-print("\n#2a: Use element builder to create custom elements")
-hidden = wb.ElemBuilder().tag("input").attr("type", "hidden").build()
-print(hidden)
-
-# create element using shortcuts
-print("\n#2b: Use shortcut methods to create elements")
+# create element
+print("\n#2: Use shortcut methods to create elements")
 message = span().text("Complete all required fields.").build()
 print(message)
 

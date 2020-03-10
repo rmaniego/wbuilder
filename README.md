@@ -15,5 +15,4 @@ Returned value is in string and can be saved into file.
 
 *Future features*
 1. Integrate element shortcuts as WebBuilder method instead as a separate ElemBuilder.
-2. Integrate wTemplate.py
-3. In-house save to file.
+2. In-house save to file.
