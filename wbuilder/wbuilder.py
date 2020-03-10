@@ -328,7 +328,7 @@ class Blocks:
         self.depth = depth(self.depth, -1)
         return self
     
-    def set_var(self, key, value):
+    def set(self, key, value):
         tabs = ("\t" * (self.depth + 1))
         self.statements.append(concat([tabs, "{%- set ", key, " = '", value, "' -%}"]))
         return self
