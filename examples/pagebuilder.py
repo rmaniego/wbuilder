@@ -4,20 +4,25 @@
     (c) 2020 Rodney Maniego Jr.
 """
 
-from wbuilder import wbuilder
-from wbuilder.wbuilder import head, title, link, body, form, a, input_, button, span
+from wbuilder import wbuilder as wb
+from wbuilder.wbuilder import title, link, form, input_, button, span
 
 
 # hardcoding
 print("\n#1: Use mkTag to create custom elements")
-header = wbuilder.mkTag("h1",
+header = wb.mkTag("h1",
                          {"id": "title",
                           "class": "custom-title"},
                          "Contact Information")
 print(header)
 
-# create element
-print("\n#2: Use shortcut methods to create elements")
+# create element using element builder
+print("\n#2a: Use element builder to create custom elements")
+hidden = wb.ElemBuilder().tag("input").attr("type", "hidden").build()
+print(hidden)
+
+# create element using shortcuts
+print("\n#2b: Use shortcut methods to create elements")
 message = span().text("Complete all required fields.").build()
 print(message)
 
@@ -49,12 +54,12 @@ print(button)
 
 # create basic html
 print("\n#5: Create basic HTML")
-html = wbuilder.WebBuilder()
+html = wb.WebBuilder()
 print(html.build())
 
 # create html and append children
 print("\n#6: Create HTML and append children")
-html = wbuilder.WebBuilder()
+html = wb.WebBuilder()
 # USAGE: html.find("selector").append("html/string")
 html.find("head").append(title().text("Form").build())
 html.find("body").append(form()

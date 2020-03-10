@@ -15,228 +15,228 @@ class ElemBuilder:
         self.content_ = ""
         self.html_escape = True
 
-    def tag(self, value):
-        self.tag_ = verify(value)
+    def tag(self, val):
+        self.tag_ = verify(val)
         return self
         
-    def text(self, value):
+    def text(self, val):
         self.html_escape = True
-        self.content_ = value
+        self.content_ = val
         return self
         
-    def html(self, value):
+    def html(self, val):
         self.html_escape = False
-        self.content_ = value
+        self.content_ = val
         return self
     
     ### attributes
-    def attr(self, attribute, value):
-        return self.attributes.get(attribute, value)
+    def attr(self, key, val):
+        self.attributes.update({"key": val})
         return self
     
-    def action(self, value):
-        self.attributes.update({"action": value})
+    def action(self, val):
+        self.attributes.update({"action": val})
         return self
     
-    def accesskey(self, value):
-        self.attributes.update({"accesskey": value})
+    def accesskey(self, val):
+        self.attributes.update({"accesskey": val})
         return self
     
-    def align(self, value):
-        if value in ["right", "left", "center"]:
-            self.attributes.update({"align": value})
+    def align(self, val):
+        if val in ["right", "left", "center"]:
+            self.attributes.update({"align": val})
         return self
     
-    def alt(self, name, value):
-        self.attributes.update({"alt": ""})
+    def alt(self, val):
+        self.attributes.update({"alt": val})
         return self
     
-    def aria(self, name, value):
-        self.attributes.update({concat(["aria-", name]): value})
+    def aria(self, key, val):
+        self.attributes.update({concat(["aria-", key]): val})
         return self
     
     def async_(self):
         self.attributes.update({"async": ""})
         return self
     
-    def autocomplete(self, value):
-        if value in ["on", "off"]:
-            self.attributes.update({"autocomplete": value})
+    def autocomplete(self, val):
+        if val in ["on", "off"]:
+            self.attributes.update({"autocomplete": val})
         return self
     
     def autofocus(self):
         self.attributes.update({"autofocus": ""})
         return self
     
-    def background(self, value):
-        self.attributes.update({"background": value})
+    def background(self, val):
+        self.attributes.update({"background": val})
         return self
     
-    def bgcolor(self, value):
-        self.attributes.update({"bgcolor": value})
+    def bgcolor(self, val):
+        self.attributes.update({"bgcolor": val})
         return self
     
-    def charset(self, value):
-        self.attributes.update({"charset": value})
+    def charset(self, val):
+        self.attributes.update({"charset": val})
         return self
     
     def checked(self):
         self.attributes.update({"checked": "true"})
         return self
     
-    def class_(self, value):
-        self.attributes.update({"class": value})
+    def class_(self, val):
+        self.attributes.update({"class": val})
         return self
 
-    def content(self, value):
-        self.attributes.update({"content": value})
+    def content(self, val):
+        self.attributes.update({"content": val})
         return self
     
-    def contenteditable(self, value):
-        if value in ["true" "false"]:
-            self.attributes.update({"contenteditable": value})
+    def contenteditable(self, val):
+        if val in ["true" "false"]:
+            self.attributes.update({"contenteditable": val})
         return self
 
-    def contextmenu(self, name, value):
-        self.attributes.update({"contextmenu": value})
+    def contextmenu(self, key, val):
+        self.attributes.update({"contextmenu": val})
         return self
     
-    def crossorigin(self, value):
-        self.attributes.update({"crossorigin": value})
+    def crossorigin(self, val):
+        self.attributes.update({"crossorigin": val})
         return self
     
-    def data(self, name, value):
-        self.attributes.update({concat(["data-", name]): value})
+    def data(self, key, val):
+        self.attributes.update({concat(["data-", key]): val})
         return self
     
-    def for_(self, value):
-        self.attributes.update({"for": value})
+    def for_(self, val):
+        self.attributes.update({"for": val})
         return self
     
     def disabled(self):
         self.attributes.update({"disabled": ""})
         return self
 
-    def draggable(self, value):
-        if value in ["true" "false", "auto"]:
-            self.attributes.update({"draggable": value})
+    def draggable(self, val):
+        if val in ["true" "false", "auto"]:
+            self.attributes.update({"draggable": val})
         return self
     
-    def height(self, value):
-        self.attributes.update({"height": value})
+    def height(self, val):
+        self.attributes.update({"height": val})
         return self
     
     def hidden(self):
         self.attributes.update({"hidden": ""})
         return self
     
-    def href(self, value, cache=False):
+    def href(self, val, cache=False):
         if not cache:
-            value = concat([value, "?v=", str(timestamp())])
-        self.attributes.update({"href": value})
+            val = concat([val, "?v=", str(timestamp())])
+        self.attributes.update({"href": val})
         return self
     
-    def id_(self, value):
-        self.attributes.update({"id": value})
+    def id_(self, val):
+        self.attributes.update({"id": val})
         return self
     
-    def icon(self, value):
-        self.attributes.update({"icon": value})
+    def icon(self, val):
+        self.attributes.update({"icon": val})
         return self
     
-    def integrity(self, value):
-        self.attributes.update({"integrity": value})
+    def integrity(self, val):
+        self.attributes.update({"integrity": val})
         return self
 
-    def item(self, value):
-        self.attributes.update({"item": value})
+    def item(self, val):
+        self.attributes.update({"item": val})
         return self
 
-    def itemprop(self, value):
-        self.attributes.update({"itemprop": value})
+    def itemprop(self, val):
+        self.attributes.update({"itemprop": val})
         return self
 
-    def maxlength(self, value):
-        self.attributes.update({"maxlength": value})
+    def maxlength(self, val):
+        self.attributes.update({"maxlength": val})
         return self
 
-    def method(self, value):
-        if value in ["post", "get"]:
-            self.attributes.update({"method": value})
+    def method(self, val):
+        if val in ["post", "get"]:
+            self.attributes.update({"method": val})
         return self
 
-    def minlength(self, value):
-        self.attributes.update({"minlength": value})
+    def minlength(self, val):
+        self.attributes.update({"minlength": val})
         return self
 
-    def name(self, value):
-        self.attributes.update({"name": value})
+    def name(self, val):
+        self.attributes.update({"name": val})
         return self
 
-    def placeholder(self, value):
-        self.attributes.update({"placeholder": value})
+    def placeholder(self, val):
+        self.attributes.update({"placeholder": val})
         return self
     
     def readonly(self):
         self.attributes.update({"readonly": ""})
         return self
     
-    def rel(self, value):
-        self.attributes.update({"rel": value})
+    def rel(self, val):
+        self.attributes.update({"rel": val})
         return self
     
     def required(self):
         self.attributes.update({"required": ""})
         return self
     
-    def role(self, value):
-        self.attributes.update({"role": value})
+    def role(self, val):
+        self.attributes.update({"role": val})
         return self
 
-    def sizes(self, value):
-        self.attributes.update({"sizes": value})
+    def sizes(self, val):
+        self.attributes.update({"sizes": val})
         return self
 
-    def spellcheck(self, value):
-        if value in ["true" "false"]:
-            self.attributes.update({"spellcheck": value})
+    def spellcheck(self, val):
+        if val in ["true" "false"]:
+            self.attributes.update({"spellcheck": val})
         return self
 
-    def src(self, value):
-        self.attributes.update({"src": value})
+    def src(self, val):
+        self.attributes.update({"src": val})
         return self
     
-    def style(self, value):
-        self.attributes.update({"style": value})
+    def style(self, val):
+        self.attributes.update({"style": val})
         return self
     
-    def subject(self, value):
-        self.attributes.update({"subject": value})
+    def subject(self, val):
+        self.attributes.update({"subject": val})
         return self
     
-    def tabindex(self, value):
-        self.attributes.update({"tabindex": value})
+    def tabindex(self, val):
+        self.attributes.update({"tabindex": val})
         return self
     
-    def title(self, value):
-        self.attributes.update({"title": value})
+    def title(self, val):
+        self.attributes.update({"title": val})
         return self
     
-    def type_(self, value):
-        self.attributes.update({"type": value})
+    def type_(self, val):
+        self.attributes.update({"type": val})
         return self
     
-    def valign(self, value):
-        if value in ["top", "middle", "bottom"]:
-            self.attributes.update({"valign": value})
+    def valign(self, val):
+        if val in ["top", "middle", "bottom"]:
+            self.attributes.update({"valign": val})
         return self
     
-    def value(self, value):
-        self.attributes.update({"value": value})
+    def value(self, val):
+        self.attributes.update({"value": val})
         return self
     
-    def width(self, value):
-        self.attributes.update({"width": value})
+    def width(self, val):
+        self.attributes.update({"width": val})
         return self
 
     ### utils
@@ -269,14 +269,14 @@ class WebBuilder:
         self.parent.append(parse(html))
         return self
 
-    def update(self, tag, old_value, new_value):
+    def update(self, tag, old_val, new_val):
         for item in self.html.find_all(tag):
             if tag == "link":
-                if item.attrs['href'] == old_value:
-                    item.attrs['href'] = new_value
+                if item.attrs['href'] == old_val:
+                    item.attrs['href'] = new_val
             elif tag == "script":
-                if item.attrs['src'] == old_value:
-                    item.attrs['src'] = new_value
+                if item.attrs['src'] == old_val:
+                    item.attrs['src'] = new_val
     
     def build(self):
         return self.html.prettify()
