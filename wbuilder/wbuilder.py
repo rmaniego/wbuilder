@@ -204,7 +204,9 @@ class ElemBuilder:
             self.attributes.update({"spellcheck": val})
         return self
 
-    def src(self, val):
+    def src(self, val, cache=False):
+        if not cache:
+            val = concat([val, "?v=", str(timestamp())])
         self.attributes.update({"src": val})
         return self
     
