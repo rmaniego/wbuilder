@@ -154,8 +154,8 @@ class ElemBuilder:
         self.attributes.update({"item": val})
         return self
 
-    def itemprop(self, val):
-        self.attributes.update({"itemprop": val})
+    def itmprop(self, val):
+        self.attributes.update({"itmprop": val})
         return self
 
     def maxlength(self, val):
@@ -274,11 +274,13 @@ class WebBuilder:
     def update(self, tag, old_value, new_value):
         for item in self.html.find_all(tag):
             if tag == "link":
-                if item.attrs['href'] == old_value:
-                    item.attrs['href'] = new_value
+                source = item.attrs['href'].split('?')
+                if source[0] == old_value:
+                    item.attrs['href'] = concat([new_value, "?v=", str(timestamp())])
             elif tag == "script":
-                if item.attrs['src'] == old_value:
-                    item.attrs['src'] = new_value
+                source = item.attrs['src'].split('?')
+                if source[0] == old_value:
+                    item.attrs['src'] = concat([new_value, "?v=", str(timestamp())])
     
     def build(self):
         return self.html.prettify()
