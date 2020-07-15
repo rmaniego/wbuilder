@@ -290,6 +290,12 @@ class WebBuilder:
     
     def build(self):
         return self.html.prettify()
+    
+    def save(self, filepath):
+        if filepath[-5:] != ".html": filepath = f"{filepath}.html"
+        makeDirs(filepath)
+        fileWriter(filepath, self.html.prettify())
+        return self
 
 class Blocks:
     def __init__(self):
