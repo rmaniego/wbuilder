@@ -1,34 +1,37 @@
 #!/usr/bin/env python3
 """
-    web builder
+    wBuilder v1.0
     (c) 2020 Rodney Maniego Jr.
     https://github.com/rmaniego/wbuilder
     MIT License
 """
 
+import os
 from bs4 import BeautifulSoup as bs
 
 
 class ElemBuilder:
     # 2020-03-04
-    def __init__(self):
+    def __init__(self, Id="", Class=""):
         self.tag_ = "div"
         self.attributes = {}
-        self.content_ = ""
+        self.attributes.update({"id": Id})
+        self.attributes.update({"class": Class})
+        self.Content = ""
         self.html_escape = True
 
     def tag(self, value):
-        self.tag_ = verify(value)
+        self.Tag = verify(value)
         return self
         
     def text(self, value):
         self.html_escape = True
-        self.content_ = value
+        self.Content = value
         return self
         
     def html(self, value):
         self.html_escape = False
-        self.content_ = value
+        self.Content = value
         return self
     
     ### attributes
@@ -57,7 +60,7 @@ class ElemBuilder:
         self.attributes.update({concat(["aria-", key]): val})
         return self
     
-    def async_(self):
+    def Async(self):
         self.attributes.update({"async": ""})
         return self
     
@@ -86,7 +89,7 @@ class ElemBuilder:
         self.attributes.update({"checked": "true"})
         return self
     
-    def class_(self, val):
+    def Class(self, val):
         self.attributes.update({"class": val})
         return self
 
@@ -111,7 +114,7 @@ class ElemBuilder:
         self.attributes.update({concat(["data-", key]): val})
         return self
     
-    def for_(self, val):
+    def For(self, val):
         self.attributes.update({"for": val})
         return self
     
@@ -133,12 +136,11 @@ class ElemBuilder:
         return self
     
     def href(self, val, cache=False):
-        if not cache:
-            val = concat([val, "?v=", str(timestamp())])
+        if not cache: val = concat([val, "?t=", str(timestamp())])
         self.attributes.update({"href": val})
         return self
     
-    def id_(self, val):
+    def Id(self, val):
         self.attributes.update({"id": val})
         return self
     
@@ -204,9 +206,8 @@ class ElemBuilder:
             self.attributes.update({"spellcheck": val})
         return self
 
-    def src(self, val, cache=False):
-        if not cache:
-            val = concat([val, "?v=", str(timestamp())])
+    def src(self, val, cached=False):
+        if not cached: val = concat([val, "?t=", str(timestamp())])
         self.attributes.update({"src": val})
         return self
     
@@ -226,7 +227,7 @@ class ElemBuilder:
         self.attributes.update({"title": val})
         return self
     
-    def type_(self, val):
+    def Type(self, val):
         self.attributes.update({"type": val})
         return self
     
@@ -245,14 +246,14 @@ class ElemBuilder:
 
     ### utils
     def build(self, clear=True):
-        html = mkTag(self.tag_,
+        html = mkTag(self.Tag,
                      compile_attribs(self.attributes),
-                     self.content_,
+                     self.Content,
                      self.html_escape)
         if clear:
-            self.tag_ = "div"
+            self.Tag = "div"
             self.attributes = {}
-            self.content_ = ""
+            self.Content = ""
             self.html_escape = True
         return html
 
@@ -269,20 +270,23 @@ class WebBuilder:
             self.parent = insert_at[0]
         return self
 
-    def append(self, html):
-        self.parent.append(parse(html))
+    def append(self, html, static=False):
+        parsed = parse(html)
+        if static:
+            tag = "link"
+            attr = "href"
+            if "<script" in html:
+                tag = "script"
+                attr = "src"
+            elif "<img" in html:
+                tag = "img"
+                attr = "src"
+            for item in parsed.find_all(tag):
+                source = item.attrs[attr]
+                item.attrs[attr] = concat([
+                    "{{ url_for('static', filename='", source, "') }}"])
+        self.parent.append(parsed)
         return self
-
-    def update(self, tag, old_value, new_value):
-        for item in self.html.find_all(tag):
-            if tag == "link":
-                source = item.attrs['href'].split('?')
-                if source[0] == old_value:
-                    item.attrs['href'] = concat([new_value, "?v=", str(timestamp())])
-            elif tag == "script":
-                source = item.attrs['src'].split('?')
-                if source[0] == old_value:
-                    item.attrs['src'] = concat([new_value, "?v=", str(timestamp())])
     
     def build(self):
         return self.html.prettify()
@@ -292,20 +296,20 @@ class Blocks:
         self.depth = 0
         self.statements = []
     
-    def if_(self, statement):
+    def If(self, statement):
         self.depth = depth(self.depth, 1)
         tabs = ("\t" * (self.depth))
         self.statements.append(concat([
             tabs, "{%- if ", statement, " -%}"]))
         return self
     
-    def elif_(self, statement):
+    def Elif(self, statement):
         tabs = ("\t" * (self.depth))
         self.statements.append(concat([
             tabs, "{%- elif ", statement, " -%}"]))
         return self
     
-    def else_(self):
+    def Else(self):
         tabs = ("\t" * (self.depth))
         self.statements.append(concat([
             tabs, "{%- else -%}"]))
@@ -318,7 +322,7 @@ class Blocks:
         self.depth = depth(self.depth, -1)
         return self
     
-    def for_(self, statement):
+    def For(self, statement):
         self.depth = depth(self.depth, 1)
         tabs = ("\t" * (self.depth))
         self.statements.append(concat([
@@ -351,127 +355,127 @@ class Blocks:
             self.statements = []
 
 ### shortcuts
-def a():
-    return ElemBuilder().tag("a")
+def a(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("a")
 
-def audio():
-    return ElemBuilder().tag("audio")
+def audio(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("audio")
 
-def body():
-    return ElemBuilder().tag("body")
+def body(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("body")
 
-def br():
-    return ElemBuilder().tag("br")
+def br(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("br")
 
-def button():
-    return ElemBuilder().tag("button")
+def button(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("button")
 
-def canvas():
-    return ElemBuilder().tag("canvas")
+def canvas(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("canvas")
 
-def caption():
-    return ElemBuilder().tag("caption")
+def caption(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("caption")
 
-def div():
-    return ElemBuilder().tag("div")
+def div(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("div")
 
-def footer():
-    return ElemBuilder().tag("footer")
+def footer(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("footer")
 
-def form():
-    return ElemBuilder().tag("form")
+def form(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("form")
 
-def h1():
-    return ElemBuilder().tag("h1")
+def h1(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("h1")
 
-def h2():
-    return ElemBuilder().tag("h2")
+def h2(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("h2")
 
-def h3():
-    return ElemBuilder().tag("h3")
+def h3(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("h3")
 
-def h4():
-    return ElemBuilder().tag("h4")
+def h4(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("h4")
 
-def h5():
-    return ElemBuilder().tag("h5")
+def h5(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("h5")
 
-def h6():
-    return ElemBuilder().tag("h6")
+def h6(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("h6")
 
-def head():
-    return ElemBuilder().tag("head")
+def head(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("head")
 
-def html():
-    return ElemBuilder().tag("html")
+def html(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("html")
 
-def img():
-    return ElemBuilder().tag("img")
+def img(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("img")
 
-def input_():
-    return ElemBuilder().tag("input")
+def Input(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("input")
 
-def label():
-    return ElemBuilder().tag("label")
+def label(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("label")
 
-def li():
-    return ElemBuilder().tag("li")
+def li(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("li")
 
-def link():
-    return ElemBuilder().tag("link")
+def link(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("link")
 
-def meta():
-    return ElemBuilder().tag("meta")
+def meta(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("meta")
 
-def nav():
-    return ElemBuilder().tag("nav")
+def nav(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("nav")
 
-def noscript():
-    return ElemBuilder().tag("noscript")
+def noscript(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("noscript")
 
-def ol():
-    return ElemBuilder().tag("ol")
+def ol(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("ol")
 
-def option():
-    return ElemBuilder().tag("option")
+def option(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("option")
 
-def p():
-    return ElemBuilder().tag("p")
+def p(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("p")
 
-def script():
-    return ElemBuilder().tag("script")
+def script(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("script")
 
-def select():
-    return ElemBuilder().tag("select")
+def select(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("select")
 
-def span():
-    return ElemBuilder().tag("span")
+def span(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("span")
 
-def style():
-    return ElemBuilder().tag("style")
+def style(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("style")
 
-def table():
-    return ElemBuilder().tag("table")
+def table(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("table")
 
-def td():
-    return ElemBuilder().tag("td")
+def td(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("td")
 
-def textarea():
-    return ElemBuilder().tag("textarea")
+def textarea(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("textarea")
 
-def title():
-    return ElemBuilder().tag("title")
+def title(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("title")
 
-def tr():
-    return ElemBuilder().tag("tr")
+def tr(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("tr")
 
-def ul():
-    return ElemBuilder().tag("ul")
+def ul(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("ul")
 
-def video():
-    return ElemBuilder().tag("video")
+def video(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("video")
 
-### utils
+### html utils
 def parse(html):
     if "!DOCTYPE" not in html:
         return bs(html, 'html.parser')
@@ -514,13 +518,14 @@ def compile_attribs(attributes):
     formatted = []
     if type(attributes) == dict:
         for key, value in attributes.items():
-            if key not in ["async", "disabled", "hidden", "readonly", "required"]:
-                formatted.append(concat([key, "='", value, "'"]))
-            else:
-                formatted.append(key)
+            if value != "":
+                if key not in ["async", "disabled", "hidden", "readonly", "required"]:
+                    formatted.append(concat([key, "='", value, "'"]))
+                else:
+                    formatted.append(key)
     return " ".join(formatted)
         
-    
+## utils
 def escape(text):
     """ Escape HTML characters """
     # https://stackoverflow.com/a/2077321/4943299
@@ -546,3 +551,15 @@ def depth(value, increment=1):
     if value < 0:
         return 0
     return value
+
+## file utils
+def makeDirs(filepath):
+    if not os.path.exists(filepath):
+        os.makedirs(filepath)
+
+def fileWrite(filepath, content, flag="w+"):
+    try:
+        with open(filepath, flag) as file:
+            return file.write(content)
+    except:
+        return ""

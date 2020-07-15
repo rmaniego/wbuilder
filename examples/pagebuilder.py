@@ -4,8 +4,8 @@
     (c) 2020 Rodney Maniego Jr.
 """
 
-from wbuilder import wbuilder as wb
-from wbuilder.wbuilder import title, link, form, input_, button, span
+import wbuilder as wb
+wbuilder import title, link, form, input_, button, span
 
 
 # hardcoding
