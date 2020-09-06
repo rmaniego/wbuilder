@@ -114,6 +114,11 @@ class ElemBuilder:
         self.attributes.update({concat(["data-", key]): val})
         return self
     
+    def defer(self):
+        ## 2020-09-06
+        self.attributes.update({"defer": ""})
+        return self
+    
     def For(self, val):
         self.attributes.update({"for": val})
         return self
@@ -221,6 +226,11 @@ class ElemBuilder:
     
     def tabindex(self, val):
         self.attributes.update({"tabindex": val})
+        return self
+    
+    def target(self, val):
+        ## 2020-09-07
+        self.attributes.update({"target": val})
         return self
     
     def title(self, val):
@@ -525,7 +535,7 @@ def compile_attribs(attributes):
     if type(attributes) == dict:
         for key, value in attributes.items():
             if value != "":
-                if key not in ["async", "disabled", "hidden", "readonly", "required"]:
+                if key not in ["async", "defer", "disabled", "hidden", "readonly", "required"]:
                     formatted.append(concat([key, "='", value, "'"]))
                 else:
                     formatted.append(key)
@@ -563,7 +573,7 @@ def makeDirs(filepath):
     if not os.path.exists(filepath):
         os.makedirs(filepath)
 
-def fileWrite(filepath, content, flag="w+"):
+def fileWriter(filepath, content, flag="w+"):
     try:
         with open(filepath, flag) as file:
             return file.write(content)
