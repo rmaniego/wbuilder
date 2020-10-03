@@ -1,5 +1,5 @@
 """
-    wBuilder v1.1.1-20201003
+    wBuilder v1.1.2-20201003
     (c) 2020 Rodney Maniego Jr.
     https://github.com/rmaniego/wbuilder
     MIT License

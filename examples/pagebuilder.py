@@ -5,7 +5,7 @@
 
 import wbuilder as wb
 from wbuilder import WebBuilder
-wbuilder import title, link, form, input_, button, span
+from wbuilder import title, link, form, input_, button, span
 
 
 # hardcoding
