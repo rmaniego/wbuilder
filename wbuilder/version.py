@@ -1,2 +1,2 @@
-""" wbuilder"""
-version = "1.1.2"
+""" wbuilder """
+version = "1.1.4"

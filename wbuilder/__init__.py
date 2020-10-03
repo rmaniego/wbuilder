@@ -1,6 +1,6 @@
 """ wbuilder """
-from wbuilder.wbuilder import ElemBuilder
-from wbuilder.wbuilder import WebBuilder
-from wbuilder.wbuilder import Blocks
-from wbuilder.version import version as __version__
+from .wbuilder import ElemBuilder
+from .wbuilder import WebBuilder
+from .wbuilder import Blocks
+from .version import version as __version__
 __all__ = ["wbuilder"]
