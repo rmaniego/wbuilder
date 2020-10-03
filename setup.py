@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 setuptools.setup(
     name = 'wbuilder',
     packages = ["wbuilder"],
-    version = '1.1.4',
+    version = '1.1.5',
     license='MIT',
     description = 'HTML template generator module for Python.',
     long_description=long_description,
@@ -16,7 +16,7 @@ setuptools.setup(
     url = 'https://github.com/rmaniego/wbuilder',
     download_url = 'https://github.com/rmaniego/wbuilder/archive/v1.0.tar.gz',
     keywords = ['HTML', 'GENERATOR', 'PYTHONIC'],
-    install_requires=[ 'beautifulsoup4' ],
+    install_requires=[ 'beautifulsoup4', 'html5lib' ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers', 

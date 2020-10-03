@@ -6,6 +6,7 @@
 """
 
 import os
+import html5lib
 from bs4 import BeautifulSoup as bs
 
 

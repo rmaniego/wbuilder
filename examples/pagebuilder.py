@@ -3,9 +3,9 @@
     (c) 2020 Rodney Maniego Jr.
 """
 
-import wbuilder as wb
-from wbuilder import WebBuilder
-from wbuilder import title, link, form, input_, button, span
+import wbuilder.wbuilder as wb
+from wbuilder.wbuilder import WebBuilder
+from wbuilder.wbuilder import title, link, form, Input, button, span
 
 
 # hardcoding
@@ -27,9 +27,9 @@ print(message)
 
 # create element and add attributes
 print("\n#3a: Create element and add attributes")
-email = (input_()
-         .type_("email")
-         .class_("custom-input")
+email = (Input()
+         .Type("email")
+         .Class("custom-input")
          .value("example@domain.com")
          .placeholder("example@domain.com")
          .maxlength("256")
@@ -48,7 +48,7 @@ print(stylesheet)
 
 # create element with inner html
 print("\n#4: Create element with HTML content")
-button = button().html("<span>Next</span>").type_("submit").build()
+button = button().html("<span>Next</span>").Type("submit").build()
 print(button)
 
 # create basic html
@@ -62,7 +62,7 @@ html = wb.WebBuilder()
 # USAGE: html.find("selector").append("html/string")
 html.find("head").append(title().text("Form").build())
 html.find("body").append(form()
-                         .id_("custom-form")
+                         .Id("custom-form")
                          .action("ip-address/process")
                          .method("get")
                          .build())
@@ -70,12 +70,13 @@ html.find("#custom-form").append(header).append(message).append(email).append(bu
 print(html.build())
 
 ## generate full html
-def templater(page):
+print("\n#6a: Create and save full html document, set html.build() to return HTML string")
+def templater(page, show_html=False):
     # initialize web builder
     html = wb.WebBuilder() 
     
     ## prepare head contents
-    html.find("head").append(wb.title().text("Webpage").build())
+    html.find("head").append(wb.title().text(page).build())
     html.find("head").append(wb.meta().charset("UTF-8").build())
     html.find("head").append(wb.meta()
                              .name("viewport")
@@ -112,10 +113,12 @@ def templater(page):
     html.save(f"{page}.html")
 
 ## generate snippets / for ajax updates
-def loader():
+print("\n#6b: Create html snippet")
+def snippet():
     html = WebBuilder(wb.div(Id="loader-msg", Class="feed-contents content-center hide").build())
     html.find("#loader-msg").append(wb.div(Class="feed-content content-center").build())
     html.find(".feed-content").append(wb.span(Class="loader-msg-label")
                              .text("Busy, please wait...")
                              .build())
     return html.build()
+print(snippet())
