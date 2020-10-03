@@ -70,7 +70,7 @@ html.find("#custom-form").append(header).append(message).append(email).append(bu
 print(html.build())
 
 ## generate full html
-print("\n#6a: Create and save full html document, set html.build() to return HTML string")
+print("\n#7a: Create and save full html document, set html.build() to return HTML string")
 def templater(page, show_html=False):
     # initialize web builder
     html = wb.WebBuilder() 
@@ -113,7 +113,7 @@ def templater(page, show_html=False):
     html.save(f"{page}.html")
 
 ## generate snippets / for ajax updates
-print("\n#6b: Create html snippet")
+print("\n#7b: Create html snippet")
 def snippet():
     html = WebBuilder(wb.div(Id="loader-msg", Class="feed-contents content-center hide").build())
     html.find("#loader-msg").append(wb.div(Class="feed-content content-center").build())
