@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-    wBuilder v1.0
+    wBuilder v1.1-20201003
     (c) 2020 Rodney Maniego Jr.
     https://github.com/rmaniego/wbuilder
     MIT License
@@ -23,72 +23,72 @@ class ElemBuilder:
     def tag(self, value):
         self.Tag = verify(value)
         return self
-        
+       
     def text(self, value):
         self.html_escape = True
         self.Content = value
         return self
-        
+       
     def html(self, value):
         self.html_escape = False
         self.Content = value
         return self
-    
+   
     ### attributes
     def attr(self, key, val):
         self.attributes.update({key: val})
         return self
-    
+   
     def action(self, val):
         self.attributes.update({"action": val})
         return self
-    
+   
     def accesskey(self, val):
         self.attributes.update({"accesskey": val})
         return self
-    
+   
     def align(self, val):
         if val in ["right", "left", "center"]:
             self.attributes.update({"align": val})
         return self
-    
+   
     def alt(self, val):
         self.attributes.update({"alt": val})
         return self
-    
+   
     def aria(self, key, val):
         self.attributes.update({concat(["aria-", key]): val})
         return self
-    
+   
     def Async(self):
         self.attributes.update({"async": ""})
         return self
-    
+   
     def autocomplete(self, val):
         if val in ["on", "off"]:
             self.attributes.update({"autocomplete": val})
         return self
-    
+   
     def autofocus(self):
         self.attributes.update({"autofocus": ""})
         return self
-    
+   
     def background(self, val):
         self.attributes.update({"background": val})
         return self
-    
+   
     def bgcolor(self, val):
         self.attributes.update({"bgcolor": val})
         return self
-    
+   
     def charset(self, val):
         self.attributes.update({"charset": val})
         return self
-    
+   
     def checked(self):
         self.attributes.update({"checked": "true"})
         return self
-    
+   
     def Class(self, val):
         self.attributes.update({"class": val})
         return self
@@ -96,63 +96,66 @@ class ElemBuilder:
     def content(self, val):
         self.attributes.update({"content": val})
         return self
-    
+   
     def contenteditable(self, val):
-        if val in ["true" "false"]:
+        if val in ["true", "false"]:
             self.attributes.update({"contenteditable": val})
         return self
 
     def contextmenu(self, val):
         self.attributes.update({"contextmenu": val})
         return self
-    
+   
     def crossorigin(self, val):
         self.attributes.update({"crossorigin": val})
         return self
-    
+   
     def data(self, key, val):
-        self.attributes.update({concat(["data-", key]): val})
+        data_key = "data"
+        if key != "":
+            data_key = concat(["data-", key])
+        self.attributes.update({data_key: val})
         return self
-    
+   
     def defer(self):
         ## 2020-09-06
         self.attributes.update({"defer": ""})
         return self
-    
+   
     def For(self, val):
         self.attributes.update({"for": val})
         return self
-    
+   
     def disabled(self):
         self.attributes.update({"disabled": ""})
         return self
 
     def draggable(self, val):
-        if val in ["true" "false", "auto"]:
+        if val in ["true", "false", "auto"]:
             self.attributes.update({"draggable": val})
         return self
-    
+   
     def height(self, val):
         self.attributes.update({"height": val})
         return self
-    
+   
     def hidden(self):
         self.attributes.update({"hidden": ""})
         return self
-    
+   
     def href(self, val, cache=False):
         if not cache: val = concat([val, "?t=", str(timestamp())])
         self.attributes.update({"href": val})
         return self
-    
+   
     def Id(self, val):
         self.attributes.update({"id": val})
         return self
-    
+   
     def icon(self, val):
         self.attributes.update({"icon": val})
         return self
-    
+   
     def integrity(self, val):
         self.attributes.update({"integrity": val})
         return self
@@ -181,23 +184,27 @@ class ElemBuilder:
     def name(self, val):
         self.attributes.update({"name": val})
         return self
+   
+    def onclick(self, val):
+        self.attributes.update({"onclick": val})
+        return self
 
     def placeholder(self, val):
         self.attributes.update({"placeholder": val})
         return self
-    
+   
     def readonly(self):
         self.attributes.update({"readonly": ""})
         return self
-    
+   
     def rel(self, val):
         self.attributes.update({"rel": val})
         return self
-    
+   
     def required(self):
         self.attributes.update({"required": ""})
         return self
-    
+   
     def role(self, val):
         self.attributes.update({"role": val})
         return self
@@ -207,7 +214,7 @@ class ElemBuilder:
         return self
 
     def spellcheck(self, val):
-        if val in ["true" "false"]:
+        if val in ["true", "false"]:
             self.attributes.update({"spellcheck": val})
         return self
 
@@ -215,41 +222,41 @@ class ElemBuilder:
         if not cached: val = concat([val, "?t=", str(timestamp())])
         self.attributes.update({"src": val})
         return self
-    
+   
     def style(self, val):
         self.attributes.update({"style": val})
         return self
-    
+   
     def subject(self, val):
         self.attributes.update({"subject": val})
         return self
-    
+   
     def tabindex(self, val):
         self.attributes.update({"tabindex": val})
         return self
-    
+   
     def target(self, val):
         ## 2020-09-07
         self.attributes.update({"target": val})
         return self
-    
+   
     def title(self, val):
         self.attributes.update({"title": val})
         return self
-    
+   
     def Type(self, val):
         self.attributes.update({"type": val})
         return self
-    
+   
     def valign(self, val):
         if val in ["top", "middle", "bottom"]:
             self.attributes.update({"valign": val})
         return self
-    
+   
     def value(self, val):
         self.attributes.update({"value": val})
         return self
-    
+   
     def width(self, val):
         self.attributes.update({"width": val})
         return self
@@ -297,10 +304,10 @@ class WebBuilder:
                     "{{ url_for('static', filename='", source, "') }}"])
         self.parent.append(parsed)
         return self
-    
+   
     def build(self):
         return self.html.prettify()
-    
+   
     def save(self, filepath):
         if filepath[-5:] != ".html": filepath = f"{filepath}.html"
         makeDirs(filepath)
@@ -311,52 +318,52 @@ class Blocks:
     def __init__(self):
         self.depth = 0
         self.statements = []
-    
+   
     def If(self, statement):
         self.depth = depth(self.depth, 1)
         tabs = ("\t" * (self.depth))
         self.statements.append(concat([
             tabs, "{%- if ", statement, " -%}"]))
         return self
-    
+   
     def Elif(self, statement):
         tabs = ("\t" * (self.depth))
         self.statements.append(concat([
             tabs, "{%- elif ", statement, " -%}"]))
         return self
-    
+   
     def Else(self):
         tabs = ("\t" * (self.depth))
         self.statements.append(concat([
             tabs, "{%- else -%}"]))
         return self
-    
+   
     def endif(self):
         tabs = ("\t" * (self.depth))
         self.statements.append(concat([
             tabs, "{%- endif -%}"]))
         self.depth = depth(self.depth, -1)
         return self
-    
+   
     def For(self, statement):
         self.depth = depth(self.depth, 1)
         tabs = ("\t" * (self.depth))
         self.statements.append(concat([
             tabs, "{%- for ", statement, " -%}"]))
         return self
-    
+   
     def endfor(self):
         tabs = ("\t" * (self.depth))
         self.statements.append(concat([
             tabs, "{%- endfor -%}"]))
         self.depth = depth(self.depth, -1)
         return self
-    
+   
     def setv(self, key, value):
         tabs = ("\t" * (self.depth + 1))
         self.statements.append(concat([tabs, "{%- set ", key, " = '", value, "' -%}"]))
         return self
-    
+   
     def put(self, value):
         tabs = ("\t" * (self.depth + 1))
         if type(value) == str:
@@ -394,6 +401,9 @@ def caption(Id="", Class=""):
 
 def div(Id="", Class=""):
     return ElemBuilder(Id, Class).tag("div")
+
+def embed(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("embed") 
 
 def footer(Id="", Class=""):
     return ElemBuilder(Id, Class).tag("footer")
@@ -448,6 +458,9 @@ def nav(Id="", Class=""):
 
 def noscript(Id="", Class=""):
     return ElemBuilder(Id, Class).tag("noscript")
+
+def object(Id="", Class=""):
+    return ElemBuilder(Id, Class).tag("object") 
 
 def ol(Id="", Class=""):
     return ElemBuilder(Id, Class).tag("ol")
@@ -540,7 +553,7 @@ def compile_attribs(attributes):
                 else:
                     formatted.append(key)
     return " ".join(formatted)
-        
+       
 ## utils
 def escape(text):
     """ Escape HTML characters """
