@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-    wBuilder v1.1-20201003
+    wBuilder v1.1.1-20201003
     (c) 2020 Rodney Maniego Jr.
     https://github.com/rmaniego/wbuilder
     MIT License
@@ -310,8 +310,8 @@ class WebBuilder:
    
     def save(self, filepath):
         if filepath[-5:] != ".html": filepath = f"{filepath}.html"
-        makeDirs(filepath)
-        fileWriter(filepath, self.html.prettify())
+        make_dirs(filepath)
+        file_write(filepath, self.html.prettify())
         return self
 
 class Blocks:
@@ -582,11 +582,11 @@ def depth(value, increment=1):
     return value
 
 ## file utils
-def makeDirs(filepath):
+def make_dirs(filepath):
     if not os.path.exists(filepath):
         os.makedirs(filepath)
 
-def fileWriter(filepath, content, flag="w+"):
+def file_write(filepath, content, flag="w+"):
     try:
         with open(filepath, flag) as file:
             return file.write(content)

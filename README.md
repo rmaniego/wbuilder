@@ -13,6 +13,6 @@ HTML template generator module for Python.
 Go to `examples/pagebuilder.py` for basic usage.
 Returned value is in string and can be saved into file.
 
-*Future features*
+*Features*
 1. Integrate element shortcuts as WebBuilder method instead as a separate ElemBuilder.
 2. In-house save to file.
