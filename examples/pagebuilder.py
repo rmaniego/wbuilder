@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
 """
     wBuilder Tuts
     (c) 2020 Rodney Maniego Jr.
 """
 
 import wbuilder as wb
+from wbuilder import WebBuilder
 wbuilder import title, link, form, input_, button, span
 
 
@@ -68,3 +68,54 @@ html.find("body").append(form()
                          .build())
 html.find("#custom-form").append(header).append(message).append(email).append(button)
 print(html.build())
+
+## generate full html
+def templater(page):
+    # initialize web builder
+    html = wb.WebBuilder() 
+    
+    ## prepare head contents
+    html.find("head").append(wb.title().text("Webpage").build())
+    html.find("head").append(wb.meta().charset("UTF-8").build())
+    html.find("head").append(wb.meta()
+                             .name("viewport")
+                             .content("width=device-width, initial-scale=1, shrink-to-fit=no")
+                             .build())
+    html.find("head").append(wb.link()
+                             .rel("icon")
+                             .href("icon.png")
+                             .Type("image/png")
+                             .sizes("96x96")
+                             .build(), static=True)
+    html.find("head").append(wb.link()
+                             .rel("stylesheet")
+                             .href("reset.css")
+                             .build(), static=True)
+    html.find("head").append(wb.link()
+                             .rel("stylesheet")
+                             .href("custom.css")
+                             .build(), static=True)
+    
+    ## load body contents
+    html.find("body").append(wb.div(Id="progress", Class="progress").data("progress", "-1").build())
+    html.find("body").append(wb.div(Id="body-loader", Class="loader loader-bg spin postload")
+                             .data("tk", "modal,nav,feed,footer").build())
+    
+    ## load scripts after body contents
+    html.find("body").append(wb.script()
+                             .src("jquery-3.5.1.min.js", True)
+                             .build(), static=True)
+    html.find("body").append(wb.script()
+                             .src("custom.js")
+                             .build(), static=True)
+    
+    html.save(f"{page}.html")
+
+## generate snippets / for ajax updates
+def loader():
+    html = WebBuilder(wb.div(Id="loader-msg", Class="feed-contents content-center hide").build())
+    html.find("#loader-msg").append(wb.div(Class="feed-content content-center").build())
+    html.find(".feed-content").append(wb.span(Class="loader-msg-label")
+                             .text("Busy, please wait...")
+                             .build())
+    return html.build()

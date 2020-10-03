@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
     wBuilder v1.1.1-20201003
     (c) 2020 Rodney Maniego Jr.
