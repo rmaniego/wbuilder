@@ -765,7 +765,7 @@ class Css:
         if self.sort:
             stylesheet.sort()
         for name, source in self.css_fonts.items():
-            stylesheet.insert(0, f"@font-face: {{ font-family: {name}; src: url('{source}'); }}")
+            stylesheet.insert(0, f"@font-face {{ font-family: {name}; src: url('{source}'); }}")
         return "\n".join(stylesheet)
     
     def save(self, filepath="", filename=""):
