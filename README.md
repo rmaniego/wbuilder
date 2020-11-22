@@ -31,7 +31,7 @@ html = WebBuilder()
 
 **Basic usage**
 ```python
-html.at("body").button()text("OK").done()
+html.at("body").button().text("OK").done()
 ```
 
 **HTML head**
@@ -39,8 +39,8 @@ html.at("body").button()text("OK").done()
 html.at("head").title().text("WebBuilder").done()
 html.at("head").meta().charset("UTF-8").done()
 html.at("head").meta().name("viewport").content("width=device-width, initial-scale=1, shrink-to-fit=no").done()
-# html.at("head").link().rel("icon").href("icon.png").Type("image/png").sizes("96x96").done(static=True)
-# html.at("head").link().rel("stylesheet").href("reset.css").done(static=True)
+html.at("head").link().rel("icon").href("icon.png").Type("image/png").sizes("96x96").done(static=True)
+html.at("head").link().rel("stylesheet").href("reset.css").done(static=True)
 html.at("head").link().rel("stylesheet").href("design.css").done()
 ```
 
