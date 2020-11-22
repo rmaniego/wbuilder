@@ -44,19 +44,30 @@ html.at("head").link().rel("stylesheet").href("reset.css").done(static=True)
 html.at("head").link().rel("stylesheet").href("design.css").done()
 ```
 
-**CSS options**
+**CSS selectors**
 ```python
-# No CSS
 html.at("body").div("prompt-msg", "popup").done()
+html.at("#prompt-msg").div(Class="header").text("Welcome!").done()
+html.at("#prompt-msg").div(Class="message").text("Lorem ipsum...").done()
 
 # CSS as a string
-html.at("#prompt-msg").div(Class="header").text("Welcome!").css(".header", "font-size: 14px; font-weight: bold;").done()
+html.css(".header", "font-size: 14px; font-weight: bold;")
 
 # CSS as a dictionary
 design = { "font-size": "12px",
            "color": "#222",
            "background-color": "#f0f0f0" }
-html.at("#prompt-msg").div(Class="message").text("Lorem ipsum...").css(".message", design).done()
+html.css(".message", design)
+html.css(".message", { "font-size": "12px",
+                       "color": "#222",
+                       "background-color": "#f0f0f0" })
+```
+
+**CSS fonts**
+```python
+html.font("funfont", "funfont.ttf")
+html.at("body").div(Class="fun").text("Fun message...").done()
+    html.css(".fun", "font-family: funfont;")
 ```
 
 **Preview HTML**

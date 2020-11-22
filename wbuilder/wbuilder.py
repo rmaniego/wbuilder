@@ -539,17 +539,16 @@ class WebBuilder:
     
     ### css
     def css(self, selector, properties):
-        if self.parent != None:
-            data = {}
-            if type(properties) == dict:
-                data = self.stylesheet.get(selector, {})
-                data.update(properties)
-            elif type(properties) == str:
-                for item in properties.split(";"):
-                    if item.strip() != "":
-                        property, value = item.split(":")
-                        data.update({property.strip(): value.strip()})
-            self.stylesheet.update({selector: data})
+        data = {}
+        if type(properties) == dict:
+            data = self.stylesheet.get(selector, {})
+            data.update(properties)
+        elif type(properties) == str:
+            for item in properties.split(";"):
+                if item.strip() != "":
+                    property, value = item.split(":")
+                    data.update({property.strip(): value.strip()})
+        self.stylesheet.update({selector: data})
         return self
     
     def font(self, font, filename):
