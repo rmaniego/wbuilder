@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 setuptools.setup(
     name = 'wbuilder',
     packages = ["wbuilder"],
-    version = '1.1.5',
+    version = '1.2.0',
     license='MIT',
     description = 'HTML template generator module for Python.',
     long_description=long_description,

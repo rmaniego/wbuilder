@@ -1,5 +1,5 @@
 """
-    wBuilder v1.1.x-20201003
+    wBuilder v1.2
     (c) 2020 Rodney Maniego Jr.
     https://github.com/rmaniego/wbuilder
     MIT License
@@ -8,6 +8,7 @@
 import os
 import html5lib
 from bs4 import BeautifulSoup as bs
+from arkivist import Arkivist
 
 
 class ElemBuilder:
@@ -278,6 +279,7 @@ class ElemBuilder:
 class WebBuilder:
     def __init__(self, html="<!DOCTYPE html>"):
         self.html = parse(html)
+        self.stylesheet = {}
         self.parent = None
 
     def find(self, selector):
@@ -313,6 +315,129 @@ class WebBuilder:
         make_dirs(filepath)
         file_write(filepath, self.html.prettify())
         return self
+
+
+class Css:
+    def __init__(self, stylesheet={}, strict=False, sort=False):
+        """
+            Update selector with a dictionary of property-value pairs
+            ...
+            Parameters
+            ---
+            filepath: string
+                custom directory to save the stylesheet
+            strict: boolean
+                only add properties found in allowlist
+            sort: boolean
+                sort the selectors and its properties
+        """
+        self.stylesheet = stylesheet
+        self.strict = strict
+        self.sort = sort
+        self.allowlist = ["align-content", "align-items", "align-self", "animation", "animation-delay", "animation-direction", "animation-duration", "animation-fill-mode", "animation-iteration-count", "animation-name", "animation-play-state", "animation-timing-function", "backface-visibility", "background", "background-attachment", "background-clip", "background-color", "background-image", "background-origin", "background-position", "background-repeat", "background-size", "border", "border-bottom", "border-bottom-color", "border-bottom-left-radius", "border-bottom-right-radius", "border-bottom-style", "border-bottom-width", "border-collapse", "border-color", "border-image", "border-image-outset", "border-image-repeat", "border-image-slice", "border-image-source", "border-image-width", "border-left", "border-left-color", "border-left-style", "border-left-width", "border-radius", "border-right", "border-right-color", "border-right-style", "border-right-width", "border-spacing", "border-style", "border-top", "border-top-color", "border-top-left-radius", "border-top-right-radius", "border-top-style", "border-top-width", "border-width", "bottom", "box-shadow", "box-sizing", "caption-side", "clear", "clip", "color", "column-count", "column-fill", "column-gap", "column-rule", "column-rule-color", "column-rule-style", "column-rule-width", "column-span", "column-width", "columns", "content", "counter-increment", "counter-reset", "cursor", "direction", "display", "empty-cells", "flex", "flex-basis", "flex-direction", "flex-flow", "flex-grow", "flex-shrink", "flex-wrap", "float", "font", "font-family", "font-size", "font-size-adjust", "font-stretch", "font-style", "font-variant", "font-weight", "height", "justify-content", "left", "letter-spacing", "line-height", "list-style", "list-style-image", "list-style-position", "list-style-type", "margin", "margin-bottom", "margin-left", "margin-right", "margin-top", "max-height", "max-width", "min-height", "min-width", "opacity", "order", "outline", "outline-color", "outline-offset", "outline-style", "outline-width", "overflow", "overflow-x", "overflow-y", "padding", "padding-bottom", "padding-left", "padding-right", "padding-top", "page-break-after", "page-break-before", "page-break-inside", "perspective", "perspective-origin", "position", "quotes", "resize", "right", "tab-size", "table-layout", "text-align", "text-align-last", "text-decoration", "text-decoration-color", "text-decoration-line", "text-decoration-style", "text-indent", "text-justify", "text-overflow", "text-shadow", "text-transform", "top", "transform", "transform-origin", "transform-style", "transition", "transition-delay", "transition-duration", "transition-property", "transition-timing-function", "vertical-align", "visibility", "white-space", "width", "word-break", "word-spacing", "word-wrap", "z-index"]
+    
+    def add(self, selector, data):
+        """
+            Update selector with a dictionary of property-value pairs
+            ...
+            Parameters
+            ---
+            selector: string
+                CSS selector
+            data: dictionary
+                property-value pairs
+        """
+        if type(data) == dict:
+            if self.strict:
+                for property in data:
+                    if property not in self.allowlist:
+                        data.pop(property)
+            temp = self.stylesheet.get(selector, {})
+            temp.update(data)
+            self.stylesheet.update({selector: temp})
+        return self
+    
+    def add_from_string(self, selector, properties):
+        """
+            Update selector with a dictionary of property-value pairs
+            ...
+            Parameters
+            ---
+            selector: string
+                CSS selector
+            properties: string
+                property-value pairs as string
+        """
+        if type(properties) == str:
+            for item in properties.split(";"):
+                if item.strip() != "":
+                    property, value = item.split(":")
+                    self.update(selector, property.strip(), value.strip())
+        return self
+    
+    def update(self, selector, property, value):
+        if not self.strict or property in self.allowlist:
+            data = self.stylesheet.get(selector, {})
+            data.update({property: value})
+            self.stylesheet.update({selector: data})
+        return self
+    
+    def get(self, selector):
+        """
+            Returns the property-value pairs of the selector
+            ...
+            Parameters
+            ---
+            selector: string
+                CSS selector
+        """
+        return self.stylesheet.get(selector, {})
+    
+    def remove(self, selector):
+        """
+            Removes the selector from the stylesheet
+            ...
+            Parameters
+            ---
+            selector: string
+                CSS selector
+        """
+        self.stylesheet.pop(selector, None)
+        return self
+    
+    def build(self):
+        """
+            Returns a parsed, plain-text version of the stylesheet
+        """
+        stylesheet = []
+        for selector, data in self.stylesheet.items():
+            attributes = []
+            if self.sort:
+                data = dict(sorted(data.items()))
+            for attr, value in data.items():
+                attributes.append(f"{attr}: {value};")
+            cleaned = " ".join(attributes)
+            stylesheet.append(f"{selector} {{ {cleaned} }} ")
+        if self.sort:
+            stylesheet.sort()
+        return "\n".join(stylesheet)
+    
+    def save(self, filepath, filename):
+        """
+            Save the
+            ...
+            Parameters
+            ---
+            filepath: string
+                directory of the stylesheet
+            filename: string
+                filename of the stylesheet
+        """
+        make_dirs(filepath)
+        if filename[-4:] != ".css": filename = f"{filename}.css"
+        file_write(f"{filepath}/{filename}", self.build())
+        return self
+        
 
 class Blocks:
     def __init__(self):
