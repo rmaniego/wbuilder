@@ -7,6 +7,8 @@
 
 HTML template generator module for Python.
 
+**wbuilder** is no longer maintained, use [wbuilder2](https://pypi.org/project/wbuilder2/) instead.
+
 Read: [Introducing wBuilder: An HTML5 Generator for Python](https://peakd.com/hive-102677/@oniemaniego/introducing-wbuilder-an-html5-generator-for-python)
 
 *Requirements:*
