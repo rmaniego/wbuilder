@@ -8,13 +8,12 @@
 import os
 import html5lib
 from bs4 import BeautifulSoup as bs
-from arkivist import Arkivist
 
 
 class ElemBuilder:
     # 2020-03-04
     def __init__(self, Id="", Class=""):
-        self.tag_ = "div"
+        self.Tag = "div"
         self.attributes = {}
         self.attributes.update({"id": Id})
         self.attributes.update({"class": Class})
