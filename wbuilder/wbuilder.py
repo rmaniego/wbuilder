@@ -553,7 +553,7 @@ class WebBuilder:
         return self
     
     def font(self, font, filename):
-        self.css_fonts.append({font, filename})
+        self.css_fonts.append({font: filename})
         return self
 
     ### utils
