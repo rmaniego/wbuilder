@@ -5,164 +5,82 @@
     MIT License
 ```
 
-HTML template generator module for Python.
-
-**wbuilder** is no longer maintained, use [wbuilder2](https://pypi.org/project/wbuilder2/) instead.
+HTML template generator for Python.
 
 Read: [Introducing wBuilder: An HTML5 Generator for Python](https://peakd.com/hive-102677/@oniemaniego/introducing-wbuilder-an-html5-generator-for-python)
 
 *Requirements:*
 - BS4
 
-Go to `examples/pagebuilder.py` for basic usage.
+Go to `examples/*.py` for basic usage.
 Returned value is in string and can be saved into file.
 
 *Future Features*
 - Basic JQuery generator
 
-## Usage
-### hardcoding
+## WebBuilder Usage
+**Import**
 ```python
-print("\n#1a: Use mkTag to create custom elements")
-header = mkTag("h1",
-                         {"id": "title",
-                          "class": "custom-title"},
-                         "Contact Information")
-print(header)
+from wbuilder.wbuilder import WebBuilder
 ```
 
-### using element builder
-```python
-print("\n#1b: Use ElemBuilder to create custom elements")
-box = ElemBuilder().tag("div").attr("lang", "en-PH").build()
-print(box)
-```
-
-### create element
-```python
-print("\n#2: Use shortcut methods to create elements")
-message = span().text("Complete all required fields.").build()
-print(message)
-```
-
-### create element and add attributes
-```python
-print("\n#3a: Create element and add attributes")
-email = (Input()
-         .Type("email")
-         .Class("custom-input")
-         .value("example@domain.com")
-         .placeholder("example@domain.com")
-         .maxlength("256")
-         .required()
-         .build())
-print(email)
-```
-
-### create element and add attributes
-```python
-print("\n#3b: Create element and add attributes")
-stylesheet = (link()
-         .rel("stylesheet")
-         .href("https://example.com/resources/design.css")
-         .integrity("ABCDE")
-         .build())
-print(stylesheet)
-```
-
-### create element with inner html
-```python
-print("\n#4: Create element with HTML content")
-button = button().html("<span>Next</span>").Type("submit").build()
-print(button)
-```
-
-### create basic html
-```python
-print("\n#5: Create basic HTML")
-html = WebBuilder()
-print(html.build())
-```
-
-### create html and append children
-```python
-print("\n#6: Create HTML and append children")
-html = WebBuilder()
-```
-
-### USAGE: html.find("selector").append("html/string")
-```python
-html.find("head").append(title().text("Form").build())
-html.find("body").append(form()
-                         .Id("custom-form")
-                         .action("ip-address/process")
-                         .method("get")
-                         .build())
-html.find("#custom-form").append(header).append(message).append(email).append(button)
-print(html.build())
-```
-
-### generate full html
-```python
-print("\n#7a: Create and save full html document, set html.build() to return HTML string")
-def templater(page, show_html=False):
-    # initialize web builder
-    html = WebBuilder() 
-    
-    ## prepare head contents
-    html.find("head").append(title().text(page).build())
-    html.find("head").append(meta().charset("UTF-8").build())
-    html.find("head").append(meta()
-                             .name("viewport")
-                             .content("width=device-width, initial-scale=1, shrink-to-fit=no")
-                             .build())
-    html.find("head").append(link()
-                             .rel("icon")
-                             .href("icon.png")
-                             .Type("image/png")
-                             .sizes("96x96")
-                             .build(), static=True)
-    html.find("head").append(link()
-                             .rel("stylesheet")
-                             .href("reset.css")
-                             .build(), static=True)
-    html.find("head").append(link()
-                             .rel("stylesheet")
-                             .href("custom.css")
-                             .build(), static=True)
-    
-    ## load body contents
-    html.find("body").append(div(Id="progress", Class="progress").data("progress", "-1").build())
-    html.find("body").append(div(Id="body-loader", Class="loader loader-bg spin postload")
-                             .data("tk", "modal,nav,feed,footer").build())
-    
-    ## load scripts after body contents
-    html.find("body").append(script()
-                             .src("jquery-3.5.1.min.js", True)
-                             .build(), static=True)
-    html.find("body").append(script()
-                             .src("custom.js")
-                             .build(), static=True)
-    
-    html.save(f"{page}.html")
-```
-
-### generate snippets / for ajax updates
-```python
-print("\n#7b: Create html snippet")
-def snippet():
-    html = WebBuilder(div(Id="loader-msg", Class="feed-contents content-center hide").build())
-    html.find("#loader-msg").append(div(Class="feed-content content-center").build())
-    html.find(".feed-content").append(span(Class="loader-msg-label")
-                             .text("Busy, please wait...")
-                             .build())
-    return html.build()
-print(snippet())
-```
-
-## Usage Css
 **Initialize**
 ```python
+html = WebBuilder()
+```
+
+**Basic usage**
+```python
+html.at("body").button()text("OK").done()
+```
+
+**HTML head**
+```python
+html.at("head").title().text("WebBuilder").done()
+html.at("head").meta().charset("UTF-8").done()
+html.at("head").meta().name("viewport").content("width=device-width, initial-scale=1, shrink-to-fit=no").done()
+# html.at("head").link().rel("icon").href("icon.png").Type("image/png").sizes("96x96").done(static=True)
+# html.at("head").link().rel("stylesheet").href("reset.css").done(static=True)
+html.at("head").link().rel("stylesheet").href("design.css").done()
+```
+
+**CSS options**
+```python
+# No CSS
+html.at("body").div("prompt-msg", "popup").done()
+
+# CSS as a string
+html.at("#prompt-msg").div(Class="header").text("Welcome!").css(".header", "font-size: 14px; font-weight: bold;").done()
+
+# CSS as a dictionary
+design = { "font-size": "12px",
+           "color": "#222",
+           "background-color": "#f0f0f0" }
+html.at("#prompt-msg").div(Class="message").text("Lorem ipsum...").css(".message", design).done()
+```
+
+**Preview HTML**
+```python
+print(html.build())
+```
+
+**Save to file**
+```python
+# defaults
+html.save_to_html()
+html.save_stylesheet()
+
+# custom filepaths
+html.save_to_html("templates", "home.html")
+html.save_stylesheet("static", "custom.css")
+```
+
+## Css class
+**Initialize**
+```python
+from wbuilder.wbuilder import Css
+
+
 print("\n# Initialize...")
 css = Css(sort=True)
 ```
