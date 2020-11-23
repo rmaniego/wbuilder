@@ -247,12 +247,12 @@ class WebBuilder:
         self.element("video")
 
     ### content data
-    def text(self, value):
-        self.html_escape = True
+    def text(self, value, escape=True):
+        self.html_escape = escape
         self.Content = value
         return self
        
-    def html(self, value):
+    def html_string(self, value):
         self.html_escape = False
         self.Content = value
         return self
