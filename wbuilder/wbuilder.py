@@ -1131,7 +1131,7 @@ def verify(tag):
             "center", "cite", "code", "col", "colgroup", "data", "datalist",
             "dd", "del", "details", "dfn", "dialog", "dir", "div", "dl",
             "dt", "em", "embed", "fieldset", "figcaption", "figure", "font",
-            "footer", "form", "frame", "frameset", "h1" - "h6", "head",
+            "footer", "form", "frame", "frameset", "h1", "h6", "head",
             "header", "hr", "html", "i", "iframe", "img", "input", "ins",
             "kbd", "label", "legend", "li", "link", "main", "map", "mark",
             "meta", "meter", "nav", "noframes", "noscript", "object", "ol",
