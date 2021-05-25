@@ -1104,7 +1104,7 @@ class Css:
 
 ### html utils
 def parse(html):
-    if "!DOCTYPE" not in html:
+    if "!doctype" not in html:
         return bs(html, 'html.parser')
     return bs(html, "html5lib")
 
