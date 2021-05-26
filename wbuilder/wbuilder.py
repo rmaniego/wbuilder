@@ -741,6 +741,11 @@ class WebBuilder:
             self.attributes.update({"maxlength": val})
         return self
 
+    def List(self, val):
+        if self.parent != None:
+            self.attributes.update({"method": val})
+        return self
+
     def method(self, val):
         if self.parent != None:
             if val in ["post", "get"]:
