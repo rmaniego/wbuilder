@@ -2,13 +2,14 @@
     wBuilder Tuts
     (c) 2020 Rodney Maniego Jr.
 """
-from wbuilder.wbuilder import WebBuilder
+from wbuilder import WebBuilder
 
 
 ## tests
 html = WebBuilder()
 
 ## head
+html.attrs("head", "lang", "en", 0)
 html.at("head").title().text("WebBuilder").done()
 html.at("head").meta().charset("UTF-8").done()
 html.at("head").meta().name("viewport").content("width=device-width, initial-scale=1, shrink-to-fit=no").done()
@@ -28,6 +29,11 @@ design = { "font-size": "12px",
            "color": "#222",
            "background-color": "#f0f0f0" }
 html.at("#prompt-msg").div(Class="message").text("Lorem ipsum...").css(".message", design).done()
+
+## change attribute value of all elements with specified selector
+html.attrs("div", "style", "display: block;")
+html.attrs("div", "style", "display: none;", attrs={"class": "popup"})
+
 print(html.build())
 
 ## save to file

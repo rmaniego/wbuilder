@@ -63,6 +63,13 @@ html.css(".message", { "font-size": "12px",
                        "background-color": "#f0f0f0" })
 ```
 
+**Update element attribute**
+```python
+html.attrs("head", "lang", "en", 0)
+html.attrs("div", "style", "display: block;")
+html.attrs("div", "style", "display: none;", attrs={"class": "popup"})
+```
+
 **CSS fonts**
 ```python
 html.font("funfont", "funfont.ttf")

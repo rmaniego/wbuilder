@@ -56,6 +56,41 @@ class WebBuilder:
         """
         self.at(selector)
         return self
+    
+    def attrs(self, selector, attribute, value, index=-1, attrs=None):
+        """
+            Search
+            ...
+            Parameters
+            ---
+            selector: string
+                valid html/css selector
+            attribute: string
+                valid html5 element attribute
+            value: string
+                value of the attribute
+            index: int
+                specific index to change; if -1, change all
+            attrs: dict
+        """
+        found = {}
+        if attrs is None:
+            found = self.html.findAll(selector)
+        else:
+            if isinstance(attrs, dict):
+                found = self.html.findAll(selector, attrs)
+        count = len(found)
+        if count > 0:
+            if not isinstance(index, int):
+                index = -1
+            if index == -1:
+                for i in range(0, count):
+                    found[i].attrs.update({attribute: value})
+            else:
+                if index >= count:
+                    index = count - 1
+                found[index].attrs.update({attribute: value})
+        return self
 
     def element(self, tag, Id="", Class=""):
         """
@@ -65,10 +100,8 @@ class WebBuilder:
             ---
             tag: string
                 any valid HTML5 tag
-            ---
             Id: string
                 unique string
-            ---
             Class: string
                 useful when designing with CSS
         """
