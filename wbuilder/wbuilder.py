@@ -1140,6 +1140,42 @@ class Css:
         file_write(fullpath, self.build())
         return self
 
+class FromJSONBuild:
+    def __init__(self, json, document=None):
+        self.json = None
+        if isinstance(json, dict):
+            self.json = json
+        self.document = None
+        if isinstance(document, str):
+            self.document = document
+    
+    def append(self, json):
+        if isinstance(json, dict):
+            self.json.update(json)
+        return self
+    
+    def clear(self):
+        self.json = None
+        return self
+    
+    def build(self):
+        self.html = WebBuilder()
+        for element in self.json.values():
+            self.html.at(element.get("selector", "body"))
+            tag = element.get("tag", "div")
+            Id = element.get("Id", "")
+            Class = element.get("Class", "")
+            self.html.element(tag, Id, Class)
+            blocklist = ("selector", "tag", "Id", "Class", "static")
+            for key, value in element.items():
+                if key not in blocklist:
+                    self.html.attr(key, value)
+            static = False
+            if element.get("static", "") == "True":
+                static = True
+            self.html.done(static=static)
+        return self.html.build()
+
 ### html utils
 def parse(html):
     if "!doctype" not in html:

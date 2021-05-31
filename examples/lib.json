@@ -1,0 +1,45 @@
+{
+	"0": {
+		"selector": "head",
+		"tag": "meta",
+		"charset": "UTF-8"
+	},
+	"1": {
+		"selector": "head",
+		"tag": "meta",
+		"name": "viewport",
+		"content": "width=device-width, initial-scale=1"
+	},
+	"2": {
+		"selector": "head",
+		"tag": "link",
+		"rel": "icon",
+		"Type": "image/png",
+		"href": "icon.png",
+		"sizes": "96x96",
+		"static": "True"
+	},
+	"3": {
+		"selector": "head",
+		"tag": "link",
+		"rel": "stylesheet",
+		"Type": "text/css",
+		"href": "reset.css",
+		"static": "True"
+	},
+	"5": {
+		"selector": "body",
+		"tag": "script",
+		"src": "https://code.jquery.com/jquery-3.6.0.slim.min.js",
+		"integrity": "sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=",
+		"crossorigin": "anonymous"
+	},
+	"7": {
+		"selector": "body",
+		"tag": "script",
+		"src": "media/scripting.js",
+		"Type": "text/javascript",
+		"charset": "UTF-8",
+		"static": "True"
+	}
+}
