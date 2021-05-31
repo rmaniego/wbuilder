@@ -127,19 +127,31 @@ css.update(".nav", "font-size", "14px")
 
 **Show all selectors**
 ```python
-print("\n# Show all selectors...")
 print(css.build())
 ```
 
 **Save to file**
 ```python
-print("\n# Save to file...")
 css.save("static", "design.css")
 ```
 
 **Remove selector data**
 ```python
-print("\n# Remove selector data..")
 css.remove(".nav")
 print(css.build())
+```
+
+**JSON to HTML**
+```python
+from wbuilder import FromJSONBuild
+
+tags = {
+    "0": {
+		"selector": "head",
+		"tag": "meta",
+		"charset": "UTF-8"
+	}
+}
+html = FromJSONBuild(tags).build()
+print(html)
 ```
