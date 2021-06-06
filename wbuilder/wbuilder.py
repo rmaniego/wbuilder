@@ -1172,7 +1172,12 @@ class FromJSONBuild:
                 
                 for key, value in element.items():
                     if key not in blocklist:
-                        self.html.attr(key, value)
+                        if key == "text":
+                            self.html.text(value)
+                        elif key == "html_string":
+                            self.html.html_string(value)
+                        else:
+                            self.html.attr(key, value)
                 static = False
                 if element.get("static", "") == "True":
                     static = True
