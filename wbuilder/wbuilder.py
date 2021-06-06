@@ -1159,7 +1159,7 @@ class FromJSONBuild:
         return self
     
     def build(self):
-        self.html = WebBuilder()
+        self.html = WebBuilder(self.document)
         for element in self.json.values():
             self.html.at(element.get("selector", "body"))
             tag = element.get("tag", "div")
