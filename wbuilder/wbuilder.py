@@ -1161,19 +1161,27 @@ class FromJSONBuild:
     def build(self):
         self.html = WebBuilder(self.document)
         for element in self.json.values():
-            self.html.at(element.get("selector", "body"))
-            tag = element.get("tag", "div")
-            Id = element.get("Id", "")
-            Class = element.get("Class", "")
-            self.html.element(tag, Id, Class)
-            blocklist = ("selector", "tag", "Id", "Class", "static")
-            for key, value in element.items():
-                if key not in blocklist:
-                    self.html.attr(key, value)
-            static = False
-            if element.get("static", "") == "True":
-                static = True
-            self.html.done(static=static)
+            tag = element.get("tag", "")
+            selector = element.get("selector", "body")
+            blocklist = ("selector", "tag", "Id", "Class", "static", "index")
+            if tag != "":
+                self.html.at(selector)
+                Id = element.get("Id", "")
+                Class = element.get("Class", "")
+                self.html.element(tag, Id, Class)
+                
+                for key, value in element.items():
+                    if key not in blocklist:
+                        self.html.attr(key, value)
+                static = False
+                if element.get("static", "") == "True":
+                    static = True
+                self.html.done(static=static)
+            else:
+                index = element.get("index", -1)
+                for key, value in element.items():
+                    if key not in blocklist:
+                        self.html.attrs(self, selector, key, value, index=index)
         return self.html.build()
 
 ### html utils

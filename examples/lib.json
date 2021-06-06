@@ -1,5 +1,11 @@
 {
-	"0": {
+	"0a": {
+		"selector": "html",
+		"tag": "",
+		"lang": "en",
+        "index": 0
+	},
+    "0": {
 		"selector": "head",
 		"tag": "meta",
 		"charset": "UTF-8"
