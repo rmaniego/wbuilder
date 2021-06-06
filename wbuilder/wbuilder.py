@@ -1181,7 +1181,7 @@ class FromJSONBuild:
                 index = element.get("index", -1)
                 for key, value in element.items():
                     if key not in blocklist:
-                        self.html.attrs(self, selector, key, value, index=index)
+                        self.html.attrs(selector, key, value, index=index)
         return self.html.build()
 
 ### html utils
