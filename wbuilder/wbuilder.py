@@ -737,10 +737,10 @@ class WebBuilder:
             self.attributes.update({"hidden": ""})
         return self
 
-    def href(self, val, cache=False):
+    def href(self, val, cached=False):
         if self.parent != None:
             ts = str(timestamp())
-            if not cache: val = f"{val}?t={ts}"
+            if not cached: val = f"{val}?t={ts}"
             self.attributes.update({"href": val})
         return self
 
@@ -776,7 +776,7 @@ class WebBuilder:
 
     def List(self, val):
         if self.parent != None:
-            self.attributes.update({"method": val})
+            self.attributes.update({"list": val})
         return self
 
     def method(self, val):
