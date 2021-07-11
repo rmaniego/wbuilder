@@ -29,11 +29,6 @@ from wbuilder.wbuilder import WebBuilder
 html = WebBuilder()
 ```
 
-**Basic usage**
-```python
-html.at("body").button().text("OK").done()
-```
-
 **HTML head**
 ```python
 html.at("head").title().text("WebBuilder").done()
@@ -42,6 +37,13 @@ html.at("head").meta().name("viewport").content("width=device-width, initial-sca
 html.at("head").link().rel("icon").href("icon.png").Type("image/png").sizes("96x96").done(static=True)
 html.at("head").link().rel("stylesheet").href("reset.css").done(static=True)
 html.at("head").link().rel("stylesheet").href("design.css").done()
+```
+
+**Basic usage**
+```python
+html.at("body").button().text("OK").done()
+html.at("body").href(Id="link").href("#", cached=False).text("OK").done()
+html.at("body").script(Id="script").src("/path/to/js", cached=False).done()
 ```
 
 **CSS selectors**

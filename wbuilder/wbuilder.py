@@ -737,10 +737,14 @@ class WebBuilder:
             self.attributes.update({"hidden": ""})
         return self
 
-    def href(self, val, cached=False):
+    def href(self, val, cached=True):
         if self.parent != None:
             ts = str(timestamp())
-            if not cached: val = f"{val}?t={ts}"
+            if not cached:
+                if "?" in val:
+                    val = f"{val}&t={ts}"
+                else:
+                    val = f"{val}?t={ts}"
             self.attributes.update({"href": val})
         return self
 
@@ -836,10 +840,14 @@ class WebBuilder:
                 self.attributes.update({"spellcheck": val})
         return self
 
-    def src(self, val, cached=False):
+    def src(self, val, cached=True):
         if self.parent != None:
             ts = str(timestamp())
-            if not cached: val = f"{val}?t={ts}"
+            if not cached:
+                if "?" in val:
+                    val = f"{val}&t={ts}"
+                else:
+                    val = f"{val}?t={ts}"
         self.attributes.update({"src": val})
         return self
 
