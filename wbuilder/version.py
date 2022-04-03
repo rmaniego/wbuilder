@@ -1,2 +1,2 @@
 """ wbuilder """
-version = "2.2.6"
+version = "3.0.0"
