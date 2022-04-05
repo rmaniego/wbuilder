@@ -20,56 +20,63 @@ class WebBuilder:
         self.filepath = filepath
         self.html = parse(html, "<!DOCTYPE html>")
         if html is None:
-            self.rels.insert(["html", "head", "body"])
+            for tag in ("html", "head", "body"):
+                self.rels.insert(tag)
         self.selectors = Arkivist()
         self.Html5Tags = _getHtml5Tags()
         self.CSS3Attributes = _getAttributes()
         self.Html5Properties = _getProperties()
         self.autoWbIDs = []
         self.parent = None
-        self.nth = None
         random.seed(1024)
     
     def at(self, parent, **kwargs):
-        self.nth = None
         self.parent = None
-        if isinstance((nth:=kwargs.get("nth", None)), int):
-            self.nth = nth
         if isinstance(parent, str):
             self.parent = parent
         return self
     
+    def _appendFromDict(self, properties):
+        if self.parent is not None:
+            if isinstance(properties, dict):
+                id = properties["id"]
+                properties["selector"] = ""
+                properties["parent"] = self.parent
+                self.rels.attach(self.parent, id)
+                self.selectors.set(id, properties)
+            
+    
     def append(self, tag, id=None, data=None, text=None, html=None, escape=True, static=False, style=None, cached=True, **kwargs):
         if self.parent is not None:
             id2 = None
-            attribs = {}
-            attribs["tag"] = "div"
+            properties = {}
+            properties["tag"] = "div"
             if tag in self.Html5Tags:
-                attribs["tag"] = tag
+                properties["tag"] = tag
             if isinstance(text, str):
-                attribs["html"] = text
+                properties["html"] = text
             if isinstance(html, str):
-                attribs["html"] = html
-            attribs["escape"] = isinstance(escape, bool) and bool(escape)
-            attribs["static"] = isinstance(static, bool) and bool(static)
-            attribs["cached"] = isinstance(cached, bool) and bool(cached)
+                properties["html"] = html
+            properties["escape"] = isinstance(escape, bool) and bool(escape)
+            properties["static"] = isinstance(static, bool) and bool(static)
+            properties["cached"] = isinstance(cached, bool) and bool(cached)
             if isinstance(id, str):
-                attribs["class"] = []
+                properties["class"] = []
                 for i in id.split(" "):
                     if i[0] == "#":
                         id2 = i
                     else:
-                        attribs["class"].append(i.replace(".", ""))
+                        properties["class"].append(i.replace(".", ""))
             while (id2 is None) or (id2 in self.selectors):
                 id2 = _newId()
                 self.autoWbIDs.append(id2)
-            attribs["id"] = id2
+            properties["id"] = id2
             if isinstance(data, dict):
                 for name, value in data:
                     if not len(name):
                         if "data-" not in name:
                             name = "data-" + str(name)
-                        attribs[name] = value
+                        properties[name] = value
             if isinstance(style, str):
                 styling = {}
                 for property in style.split(";"):
@@ -80,19 +87,22 @@ class WebBuilder:
                                 if self.CSS3Attributes.contains(key):
                                     if len((value:=data[1].strip())):
                                         styling.update({key: value})
-                attribs["style"] = styling
+                properties["style"] = styling
             if isinstance(style, dict):
                 styling = {}
                 for key, value in style.items():
                     if self.CSS3Attributes.contains(key):
                         styling.update({key: value})
-                attribs["style"] = styling
+                properties["style"] = styling
             for key, value in kwargs.items():
                 key = key.lower().replace("_", "")
                 if key in self.Html5Properties:
-                    attribs[key] = value
-            self.rels.set(self.parent, id2)
-            self.selectors.set(id2, attribs)
+                    properties[key] = value
+            
+            properties["selector"] = ""
+            properties["parent"] = self.parent
+            self.rels.attach(self.parent, id2)
+            self.selectors.set(id2, properties)
         return self
     
     def prop(self, selector, property, value):
@@ -103,6 +113,7 @@ class WebBuilder:
                 self.selectors[selector] = {}
                 self.selectors[selector].update({property: ""})
             self.selectors[selector][property] = value
+            self.selectors[selector]["parent"] = selector
             self.selectors[selector]["selector"] = selector
     
     def inlineCss(self, selector, style, reset=False):
@@ -133,41 +144,40 @@ class WebBuilder:
         for parent, children in self.rels.items():
             for child in children:
                 used.append(child)
-                attribs = self.selectors[child]
-                attribs["selector"] = ""
-                attribs["parent"] = parent
-                json.set(json.count(), attribs)
-        for selector, attribs in self.selectors.items():
+                properties = self.selectors[child]
+                properties["selector"] = ""
+                properties["parent"] = parent
+                json.set(json.count(), properties)
+        for selector, properties in self.selectors.items():
             if selector not in used:
-                if len(attribs) > 0:
-                    attribs["selector"] = selector
-                    attribs["parent"] = selector
-                    json.set(json.count(), attribs)
-        json.save()
+                if len(properties) > 0:
+                    properties["selector"] = selector
+                    properties["parent"] = selector
+                    json.set(json.count(), properties)
+        
     
     def fromJson(self, source):
         self.html = parse(None, "<!DOCTYPE html>")
         self.rels = Namari()
         self.selectors = Arkivist()
-        self.rels.insert("html")
-        self.rels.insert("head")
-        self.rels.insert("body")
+        for tag in ("html", "head", "body"):
+            self.rels.insert(tag)
         
         json = {}
         if isinstance(source, dict):
             json = Arkivist().load(source)
         if isinstance(source, str):
             json = Arkivist(source)
-        for _, attribs in json.items():
-            parent = attribs["parent"]
+        for _, properties in json.items():
+            parent = properties["parent"]
             if not parent in list(self.rels.keys()):
                 self.rels.insert(parent)
-            if (id:=attribs.get("id", "")) != "":
-                if (id != parent) or (attribs["selector"] != parent):
+            if (id:=properties.get("id", "")) != "":
+                if (id != parent) or (properties["selector"] != parent):
                     self.rels.attach(parent, id)
-                    self.selectors.set(id, attribs)
+                    self.selectors.set(id, properties)
                 continue
-            self.selectors.set(parent, attribs)
+            self.selectors.set(parent, properties)
 
     def build(self):
         used = []
@@ -177,13 +187,15 @@ class WebBuilder:
             if len(tree:=self.html.select(parent)) > 0:
                 for child in children:
                     used.append(child)
-                    attribs = self.selectors.get(child, [])
-                    if len(attribs) > 0:
-                        if attribs.get("selector") != attribs["parent"]:
-                            element = _newTag(child, attribs)
+                    properties = self.selectors[child]
+                    properties["selector"] = ""
+                    properties["parent"] = parent
+                    if len(properties) > 0:
+                        if properties.get("selector") != properties.get("parent"):
+                            element = _newTag(child, properties)
                             parsed = parse(element)
-                            if attribs["static"]:
-                                if (tag:=attribs["tag"]) in ("link", "img", "script"):
+                            if properties["static"]:
+                                if (tag:=properties["tag"]) in ("link", "img", "script"):
                                     attr = "href"
                                     if tag in ("img", "script"):
                                         attr = "src"
@@ -196,11 +208,11 @@ class WebBuilder:
                             tree[0].append(parsed)
                         else:
                             for tree in self.html.select(parent):
-                                for property, value in attribs.items():
+                                for property, value in properties.items():
                                     if property in self.Html5Properties:
                                         if property == "id":
                                             value = value.replace("#", "")
-                                            if attribs["id"] in self.autoWbIDs:
+                                            if properties["id"] in self.autoWbIDs:
                                                 continue
                                         if property == "style" and isinstance(value, dict):
                                             styles = ""
@@ -208,15 +220,15 @@ class WebBuilder:
                                                 styles += f" {key}: {val};"
                                             value = styles.strip()
                                         tree.attrs[property] = value
-        for selector, attribs in self.selectors.items():
+        for selector, properties in self.selectors.items():
             if selector not in used:
-                if len(attribs) > 0:
+                if len(properties) > 0:
                     for tree in self.html.select(selector):
-                        for property, value in attribs.items():
+                        for property, value in properties.items():
                             if property in self.Html5Properties:
                                 if property == "id":
                                     value = value.replace("#", "")
-                                    if attribs["id"] in self.autoWbIDs:
+                                    if properties["id"] in self.autoWbIDs:
                                         continue
                                 if property == "style" and isinstance(value, dict):
                                     styles = ""
@@ -386,9 +398,9 @@ def _newId():
     id += "-" + str(random.randint(0, random.randint(0, 2048)))
     return "#wb" + hashlib.md5(id.encode("utf-8")).hexdigest()
 
-def _newTag(id, attribs):
+def _newTag(id, properties):
     data = f"id=\"{id}\"".replace("#", "")
-    for key, value in attribs.items():
+    for key, value in properties.items():
         if key in ("tag", "selector", "parent", "id", "class", "text", "html", "escape", "static", "cached"):
             if key == "class" and len(value) > 0:
                 value = " ".join(value)
@@ -397,7 +409,7 @@ def _newTag(id, attribs):
         if key not in ("async", "defer", "disabled", "hidden", "readonly", "required"):
             if value != "":
                 if key in ("href", "src"):
-                    if not attribs["cached"]:
+                    if not properties["cached"]:
                         if "?" in value:
                             value = f"{value}&t=" + str(int(time.time()))
                         else:
@@ -410,11 +422,11 @@ def _newTag(id, attribs):
                 data +=f"{key}=\"{value}\""
             continue
         data += f" {key}"
-    html = attribs.get("html", "")
-    if attribs["escape"] and len(html) > 0:
+    html = properties.get("html", "")
+    if properties["escape"] and len(html) > 0:
         codes = { "&": "&amp;", '"': "&quot;", "'": "&apos;", "<": "&lt;", ">": "&gt;" }
         html = "".join([codes.get(c, c) for c in html])
-    tag = attribs["tag"]
+    tag = properties["tag"]
     if tag not in ["meta", "link", "br", "input", "img"]:
         return f"<{tag} {data} >{html}</{tag}>"
     return f"<{tag} {data}>"
