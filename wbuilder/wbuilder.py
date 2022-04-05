@@ -26,21 +26,21 @@ class WebBuilder:
         self.CSS3Attributes = _getAttributes()
         self.Html5Properties = _getProperties()
         self.autoWbIDs = []
-        self.selector = None
+        self.parent = None
         self.nth = None
         random.seed(1024)
     
-    def at(self, selector, **kwargs):
+    def at(self, parent, **kwargs):
         self.nth = None
-        self.selector = None
+        self.parent = None
         if isinstance((nth:=kwargs.get("nth", None)), int):
             self.nth = nth
-        if isinstance(selector, str): # and self.rels.contains(selector):
-            self.selector = selector
+        if isinstance(parent, str):
+            self.parent = parent
         return self
     
     def append(self, tag, id=None, data=None, text=None, html=None, escape=True, static=False, style=None, cached=True, **kwargs):
-        if self.selector is not None:
+        if self.parent is not None:
             id2 = None
             attribs = {}
             attribs["tag"] = "div"
@@ -62,7 +62,8 @@ class WebBuilder:
                         attribs["class"].append(i.replace(".", ""))
             while (id2 is None) or (id2 in self.selectors):
                 id2 = _newId()
-            self.autoWbIDs.append(id2)
+                self.autoWbIDs.append(id2)
+            attribs["id"] = id2
             if isinstance(data, dict):
                 for name, value in data:
                     if not len(name):
@@ -90,7 +91,7 @@ class WebBuilder:
                 key = key.lower().replace("_", "")
                 if key in self.Html5Properties:
                     attribs[key] = value
-            self.rels.set(self.selector, id2)
+            self.rels.set(self.parent, id2)
             self.selectors.set(id2, attribs)
         return self
     
@@ -102,6 +103,7 @@ class WebBuilder:
                 self.selectors[selector] = {}
                 self.selectors[selector].update({property: ""})
             self.selectors[selector][property] = value
+            self.selectors[selector]["selector"] = selector
     
     def inlineCss(self, selector, style, reset=False):
         if selector not in self.selectors:
@@ -128,18 +130,18 @@ class WebBuilder:
     def toJson(self, filepath):
         used = []
         json = Arkivist(filepath).reset()
-        for selector, children in self.rels.items():
+        for parent, children in self.rels.items():
             for child in children:
                 used.append(child)
                 attribs = self.selectors[child]
-                attribs["id"] = child
-                attribs["selector"] = selector
+                attribs["selector"] = ""
+                attribs["parent"] = parent
                 json.set(json.count(), attribs)
         for selector, attribs in self.selectors.items():
             if selector not in used:
                 if len(attribs) > 0:
-                    attribs["id"] = selector
                     attribs["selector"] = selector
+                    attribs["parent"] = selector
                     json.set(json.count(), attribs)
         json.save()
     
@@ -147,7 +149,9 @@ class WebBuilder:
         self.html = parse(None, "<!DOCTYPE html>")
         self.rels = Namari()
         self.selectors = Arkivist()
-        self.rels.insert(["html", "head", "body"])
+        self.rels.insert("html")
+        self.rels.insert("head")
+        self.rels.insert("body")
         
         json = {}
         if isinstance(source, dict):
@@ -155,39 +159,60 @@ class WebBuilder:
         if isinstance(source, str):
             json = Arkivist(source)
         for _, attribs in json.items():
-            selector = attribs["selector"]
-            id = attribs["id"]
-            if id != selector:
-                self.rels.set(selector, id)
-            self.selectors.set(id, attribs)
+            parent = attribs["parent"]
+            if not self.rels.contains(parent):
+                self.rels.insert(parent)
+            if (id:=attribs.get("id", "")) != "":
+                if (id != parent) or (attribs["selector"] != parent):
+                    self.rels.attach(parent, id)
+                    self.selectors.set(id, attribs)
+                continue
+            self.selectors.set(parent, attribs)
 
     def build(self):
         used = []
         for selector, children in self.rels.items():
+            if not len((selector:=selector.strip())):
+                continue
             if len(parent:=self.html.select(selector)) > 0:
                 for child in children:
                     used.append(child)
                     attribs = self.selectors.get(child, [])
                     if len(attribs) > 0:
-                        element = _newTag(child, attribs)
-                        parsed = parse(element)
-                        if attribs["static"]:
-                            if (tag:=attribs["tag"]) in ("link", "img", "script"):
-                                attr = "href"
-                                if tag in ("img", "script"):
-                                    attr = "src"
-                                for item in parsed.find_all(tag):
-                                    source = item.attrs[attr]
-                                    item.attrs[attr] = f"{{{{ url_for('static', filename='{source}') }}}}"
-                        parent[0].append(parsed)
+                        if attribs["selector"] != attribs["parent"]:
+                            element = _newTag(child, attribs)
+                            parsed = parse(element)
+                            if attribs["static"]:
+                                if (tag:=attribs["tag"]) in ("link", "img", "script"):
+                                    attr = "href"
+                                    if tag in ("img", "script"):
+                                        attr = "src"
+                                    for item in parsed.find_all(tag):
+                                        source = item.attrs[attr]
+                                        item.attrs[attr] = f"{{{{ url_for('static', filename='{source}') }}}}"
+                            parent[0].append(parsed)
+                        else:
+                            for parent in self.html.select(selector):
+                                for property, value in attribs.items():
+                                    if property in self.Html5Properties:
+                                        if property == "id" and attribs["id"] in self.autoWbIDs:
+                                            continue
+                                        if property == "style" and isinstance(value, dict):
+                                            styles = ""
+                                            for key, val in value.items():
+                                                styles += f" {key}: {val};"
+                                            value = styles.strip()
+                                        parent.attrs[property] = value
         for selector, attribs in self.selectors.items():
             if selector not in used:
                 if len(attribs) > 0:
                     for parent in self.html.select(selector):
                         for property, value in attribs.items():
-                            if property in self.Html5Properties and property != "id":
-                                styles = ""
+                            if property in self.Html5Properties:
+                                if property == "id" and attribs["id"] in self.autoWbIDs:
+                                    continue
                                 if property == "style" and isinstance(value, dict):
+                                    styles = ""
                                     for key, val in value.items():
                                         styles += f" {key}: {val};"
                                     value = styles.strip()
@@ -352,12 +377,12 @@ def parse(html, default=None):
 def _newId():
     id = str(time.time())
     id += "-" + str(random.randint(0, random.randint(0, 2048)))
-    return "#" + hashlib.md5(id.encode("utf-8")).hexdigest()
+    return "#wb" + hashlib.md5(id.encode("utf-8")).hexdigest()
 
 def _newTag(id, attribs):
     data = f"id=\"{id}\"".replace("#", "")
     for key, value in attribs.items():
-        if key in ("tag", "selector", "id", "class", "text", "html", "escape", "static", "cached"):
+        if key in ("tag", "selector", "parent", "id", "class", "text", "html", "escape", "static", "cached"):
             if key == "class" and len(value) > 0:
                 value = " ".join(value)
                 data +=f"{key}=\"{value}\""
