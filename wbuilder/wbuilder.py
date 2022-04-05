@@ -160,7 +160,7 @@ class WebBuilder:
             json = Arkivist(source)
         for _, attribs in json.items():
             parent = attribs["parent"]
-            if not self.rels.contains(parent):
+            if not parent in list(self.rels.keys()):
                 self.rels.insert(parent)
             if (id:=attribs.get("id", "")) != "":
                 if (id != parent) or (attribs["selector"] != parent):
