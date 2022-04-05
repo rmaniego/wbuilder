@@ -179,7 +179,6 @@ class WebBuilder:
                     used.append(child)
                     attribs = self.selectors.get(child, [])
                     if len(attribs) > 0:
-                        print(parent, attribs)
                         if attribs.get("selector") != attribs["parent"]:
                             element = _newTag(child, attribs)
                             parsed = parse(element)
