@@ -171,15 +171,16 @@ class WebBuilder:
 
     def build(self):
         used = []
-        for selector, children in self.rels.items():
-            if not len((selector:=selector.strip())):
+        for parent, children in self.rels.items():
+            if not len((parent:=parent.strip())):
                 continue
-            if len(parent:=self.html.select(selector)) > 0:
+            if len(tree:=self.html.select(parent)) > 0:
                 for child in children:
                     used.append(child)
                     attribs = self.selectors.get(child, [])
                     if len(attribs) > 0:
-                        if attribs["selector"] != attribs["parent"]:
+                        print(parent, attribs)
+                        if attribs.get("selector") != attribs["parent"]:
                             element = _newTag(child, attribs)
                             parsed = parse(element)
                             if attribs["static"]:
@@ -190,33 +191,40 @@ class WebBuilder:
                                     for item in parsed.find_all(tag):
                                         source = item.attrs[attr]
                                         item.attrs[attr] = f"{{{{ url_for('static', filename='{source}') }}}}"
-                            parent[0].append(parsed)
+                            if not len(tree):
+                                tree.append(parsed)
+                                continue
+                            tree[0].append(parsed)
                         else:
-                            for parent in self.html.select(selector):
+                            for tree in self.html.select(parent):
                                 for property, value in attribs.items():
                                     if property in self.Html5Properties:
-                                        if property == "id" and attribs["id"] in self.autoWbIDs:
-                                            continue
+                                        if property == "id":
+                                            value = value.replace("#", "")
+                                            if attribs["id"] in self.autoWbIDs:
+                                                continue
                                         if property == "style" and isinstance(value, dict):
                                             styles = ""
                                             for key, val in value.items():
                                                 styles += f" {key}: {val};"
                                             value = styles.strip()
-                                        parent.attrs[property] = value
+                                        tree.attrs[property] = value
         for selector, attribs in self.selectors.items():
             if selector not in used:
                 if len(attribs) > 0:
-                    for parent in self.html.select(selector):
+                    for tree in self.html.select(selector):
                         for property, value in attribs.items():
                             if property in self.Html5Properties:
-                                if property == "id" and attribs["id"] in self.autoWbIDs:
-                                    continue
+                                if property == "id":
+                                    value = value.replace("#", "")
+                                    if attribs["id"] in self.autoWbIDs:
+                                        continue
                                 if property == "style" and isinstance(value, dict):
                                     styles = ""
                                     for key, val in value.items():
                                         styles += f" {key}: {val};"
                                     value = styles.strip()
-                                parent.attrs[property] = value
+                                tree.attrs[property] = value
         for id in self.autoWbIDs:
             for element in self.html.find_all(id=id.replace("#", "")):
                 del element.attrs["id"]
